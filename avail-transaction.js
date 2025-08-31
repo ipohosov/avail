@@ -19,7 +19,8 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/keyring';
 import { cryptoWaitReady, mnemonicValidate } from '@polkadot/util-crypto';
-import { formatBalance, isValidAddressPolkadotAddress } from '@polkadot/util';
+import { formatBalance } from '@polkadot/util';
+import { checkAddress } from '@polkadot/util-crypto';
 
 class AvailTransactionManager {
     constructor(nodeUrl = 'wss://turing-rpc.avail.so/ws') {
@@ -79,8 +80,10 @@ class AvailTransactionManager {
     async getBalance(address) {
         try {
             // Validate address format
-            if (!isValidAddressPolkadotAddress(address)) {
-                throw new Error('Invalid address format');
+            try {
+                checkAddress(address, 42); // 42 is Avail's SS58 format
+            } catch (error) {
+                throw new Error(`Invalid address format: ${error.message}`);
             }
             
             const { data: balance } = await this.api.query.system.account(address);
@@ -123,8 +126,10 @@ class AvailTransactionManager {
             const amount = this.api.createType('Balance', amountAvail * Math.pow(10, chainDecimals));
             
             // Validate recipient address
-            if (!isValidAddressPolkadotAddress(recipientAddress)) {
-                throw new Error('Invalid recipient address format');
+            try {
+                checkAddress(recipientAddress, 42); // 42 is Avail's SS58 format
+            } catch (error) {
+                throw new Error(`Invalid recipient address format: ${error.message}`);
             }
             
             // Check sender balance
