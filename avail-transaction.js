@@ -16,10 +16,10 @@
  * Note: This is for educational purposes. Always test on testnet first.
  */
 
-const { ApiPromise, WsProvider } = require('@polkadot/api');
-const { Keyring } = require('@polkadot/keyring');
-const { cryptoWaitReady, mnemonicValidate } = require('@polkadot/util-crypto');
-const { formatBalance, isValidAddressPolkadotAddress } = require('@polkadot/util');
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { Keyring } from '@polkadot/keyring';
+import { cryptoWaitReady, mnemonicValidate } from '@polkadot/util-crypto';
+import { formatBalance, isValidAddressPolkadotAddress } from '@polkadot/util';
 
 class AvailTransactionManager {
     constructor(nodeUrl = 'wss://turing-rpc.avail.so/ws') {
@@ -239,8 +239,15 @@ async function main() {
     }
 }
 
-// Entry point
-if (require.main === module) {
+// Entry point - check if this file is being run directly
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Check if this file is the main module
+if (process.argv[1] === __filename) {
     console.log('🌟 Avail Blockchain Transaction Script (Node.js)');
     console.log('='.repeat(50));
     
@@ -262,4 +269,4 @@ if (require.main === module) {
     console.log('6. Run: node avail-transaction.js');
 }
 
-module.exports = { AvailTransactionManager };
+export { AvailTransactionManager };
